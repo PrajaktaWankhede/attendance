@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Attendance System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Custom animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        .pulse-animation {
+            animation: pulse 3s infinite;
+        }
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        /* Professional card gradient */
+        .card {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-gray-200 to-gray-100 min-h-screen flex items-center justify-center">
+    <div class="card p-8 rounded-2xl shadow-xl max-w-md w-full mx-4 fade-in">
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center">
+            <i class="fas fa-qrcode mr-2 text-indigo-600"></i> QR Attendance
+        </h1>
+        <p class="text-gray-700 mb-6">Scan the QR code below to mark your attendance.</p>
+
+        <!-- QR Code -->
+        <div class="flex justify-center mb-6">
+            <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://192.168.0.15/police_attendance/mark_attendance.php" alt="QR Code" class="rounded-lg shadow-md pulse-animation">
+        </div>
+
+        <!-- Refresh Button -->
+        <button id="refreshBtn" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-sync-alt mr-2"></i> Refresh QR Code
+        </button>
+
+        <!-- Feedback Message -->
+        <p id="feedback" class="text-gray-600 text-sm hidden">QR code refreshed! Scan to mark attendance.</p>
+
+        <!-- Instructions -->
+        <div class="text-gray-700 text-sm mt-4">
+            <p><strong>Instructions:</strong></p>
+            <ul class="list-disc list-inside text-left">
+                <li>Open your QR code scanner app.</li>
+                <li>Point your camera at the QR code above.</li>
+                <li>Follow the link to confirm your attendance.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Function to refresh QR code
+        const refreshBtn = document.getElementById('refreshBtn');
+        const qrCode = document.getElementById('qrCode');
+        const feedback = document.getElementById('feedback');
+
+        refreshBtn.addEventListener('click', () => {
+            // Simulate fetching a new QR code (replace with actual API call)
+            const newQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://192.168.0.15/police_attendance/mark_attendance.php?t=${new Date().getTime()}`;
+            
+            // Show loading state
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Refreshing...';
+
+            // Update QR code
+            qrCode.src = newQrUrl;
+
+            // Show feedback
+            feedback.classList.remove('hidden');
+            feedback.textContent = 'QR code refreshed! Scan to mark attendance.';
+
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Refresh QR Code';
+                feedback.classList.add('hidden');
+            }, 2000);
+        });
+
+        // Optional: Auto-refresh QR code every 5 minutes
+        setInterval(() => {
+            const newQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://192.168.0.15/police_attendance/mark_attendance.php?t=${new Date().getTime()}`;
+            qrCode.src = newQrUrl;
+            feedback.classList.remove('hidden');
+            feedback.textContent = 'QR code auto-refreshed!';
+            setTimeout(() => feedback.classList.add('hidden'), 2000);
+        }, 300000); // 5 minutes
+    </script>
+</body>
+</html>
